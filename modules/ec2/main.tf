@@ -1,6 +1,6 @@
 provider "aws" {
   profile = "${var.profile}"
-  region = "${var.region}"
+  region  = "${var.region}"
   version = "2.14"
 }
 
@@ -34,8 +34,8 @@ data "template_file" "init" {
 
 data "aws_ami" "amazon-linux-2" {
   most_recent = true
-  owners = ["amazon"]
-  
+  owners      = ["amazon"]
+
   filter {
     name   = "owner-alias"
     values = ["amazon"]
@@ -46,15 +46,16 @@ data "aws_ami" "amazon-linux-2" {
     values = ["amzn2-ami-hvm-*-x86_64-ebs"]
   }
 }
+
 resource "aws_instance" "server" {
-  user_data = "${data.template_file.init.rendered}"
+  user_data     = "${data.template_file.init.rendered}"
   ami           = "${data.aws_ami.amazon-linux-2.id}"
   instance_type = "${var.instance_type}"
 
   key_name = "${var.key}"
 
   vpc_security_group_ids = ["${var.security_groups}"]
-  subnet_id = "${var.subnet_id}"
+  subnet_id              = "${var.subnet_id}"
 
   associate_public_ip_address = true
 
@@ -62,16 +63,14 @@ resource "aws_instance" "server" {
 
   lifecycle {
     # prevent rebuild if a newer ami is released
-    ignore_changes = [ "ami" ]
+    ignore_changes = ["ami"]
   }
-
   root_block_device {
-    volume_size = "${var.OSDiskSize}"
-    volume_type = "gp2"
+    volume_size           = "${var.OSDiskSize}"
+    volume_type           = "gp2"
     delete_on_termination = true
   }
   tags = {
     Name = "${var.name}"
   }
 }
-

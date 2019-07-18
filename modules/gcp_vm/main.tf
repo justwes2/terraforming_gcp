@@ -1,24 +1,24 @@
 provider "google" {
-  credentials = "${file("~/.ssh/sandbox-fda77da299d1.json")}"
-  project     = "sandbox-245021"
-  region      = "us-east4"
+  credentials = var.credentials
+  project     = var.project
+  region      = var.region
 }
 
 resource "google_compute_instance" "default" {
-  name         = "test"
-  machine_type = "n1-standard-1"
-  zone         = "us-east4-a"
+  name         = var.name
+  machine_type = var.machine_type
+  zone         = var.zone
 
 #   tags = ["foo", "bar"]
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-9"
+      image = var.image
     }
   }
 
   network_interface {
-    network = "default"
+    network = var.network
 
     access_config {
       // Ephemeral IP
@@ -37,6 +37,6 @@ resource "google_compute_instance" "default" {
 }
 
 # Making the service account and IAM binding
-# gcloud projects add-iam-policy-binding sandbox-245021 \
-#   --member serviceAccount:terraform@sandbox-245021.iam.gserviceaccount.com \
+# gcloud projects add-iam-policy-binding train-sandbox \
+#   --member serviceAccount:default@train-sandbox.iam.gserviceaccount.com \
 #   --role roles/compute.admin
